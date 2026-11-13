@@ -1,70 +1,78 @@
-# Getting Started with Create React App
+# Đại Chiến Hạm Đội
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Game tương tác cho TikTok LIVE: hai phe XANH và ĐỎ đánh hải chiến, người xem điều khiển trận đấu bằng bình luận, tim và quà. Game chạy trong trình duyệt trên máy streamer; OBS hoặc TikTok LIVE Studio quay trang đó để phát.
 
-## Available Scripts
+![Ảnh chụp game](docs/screenshot.jpg)
 
-In the project directory, you can run:
+## Cách chơi (phía người xem)
 
-### `npm start`
+| Hành động | Kết quả |
+| --- | --- |
+| Bình luận `1` hoặc `xanh` | Vào phe XANH, nhận 2 xuồng |
+| Bình luận `2` hoặc `đỏ` | Vào phe ĐỎ, nhận 2 xuồng |
+| Bình luận bất kỳ (đã có phe) | 1 xuồng, tối đa 5 giây một lần |
+| Thả tim | Cứ 10 tim được 1 xuồng |
+| Follow / chia sẻ | 1 / 2 tàu hộ vệ |
+| Tặng quà | Gọi tàu theo giá xu của món quà (bảng dưới) |
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+| Giá một món quà | Phần thưởng |
+| --- | --- |
+| 1 xu | 3 xuồng cao tốc |
+| 5 xu | 2 tàu hộ vệ |
+| 10 xu | 1 tuần dương hạm + 1 tàu hộ vệ |
+| 30 xu | 4 tiêm kích |
+| 99 xu | 2 tàu ngầm + 1 tuần dương hạm |
+| 199 xu | Tăng lực (công ×2, thủ ×2 trong 30 giây) + 3 tuần dương hạm |
+| 499 xu | Soái hạm mang tên và ảnh đại diện người tặng |
+| 999 xu | Mưa tên lửa + soái hạm |
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Quà tặng theo combo được nhân theo số lượng. Người chưa chọn phe mà thả tim hoặc tặng quà sẽ được xếp vào phe đang ít người hơn.
 
-### `npm test`
+Một trận kéo dài tối đa 5 phút. Phe nào phá được căn cứ đối phương thì thắng; hết giờ thì phe còn nhiều máu căn cứ hơn thắng. Sau màn kết quả, trận mới tự bắt đầu và mọi người chọn phe lại. Điểm tuần của từng người được lưu trong trình duyệt của streamer.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Chạy game
 
-### `npm run build`
+Cần Node.js 18 trở lên.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm install
+npm start            # mở http://localhost:3000
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Thử không cần TikTok:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- `http://localhost:3000/?demo=1` — tự giả lập một phòng live đông người.
+- `http://localhost:3000/?debug=1` — hiện bảng điều khiển để bấm thử từng loại quà. Phím `H` bật/tắt bảng này.
 
-### `npm run eject`
+## Nối với phòng TikTok LIVE thật
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Mở cửa sổ dòng lệnh thứ hai, trong lúc tài khoản đang phát live:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+cd server
+npm install
+node index.js ten_tai_khoan_tiktok
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Cầu nối đọc sự kiện của phòng live và đẩy sang game qua `ws://localhost:8081`. Game tự kết nối và tự nối lại khi rớt. Đổi địa chỉ bằng tham số `?ws=ws://may-khac:8081`, đổi cổng bằng biến môi trường `PORT`.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Cầu nối dùng thư viện không chính thức [`tiktok-live-connector`](https://github.com/zerodytrash/TikTok-Live-Connector). Thư viện này có thể ngừng hoạt động khi TikTok thay đổi giao thức, và bị giới hạn số lần kết nối nếu không có khoá của dịch vụ ký Euler Stream (đặt qua biến môi trường `EULER_API_KEY`).
 
-## Learn More
+## Phát lên TikTok
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. Trong OBS hoặc TikTok LIVE Studio, thêm nguồn **Browser** trỏ tới `http://localhost:3000`, kích thước 1080×1920.
+2. Game chừa trống phần dưới màn hình để khung bình luận của TikTok không che chiến trường.
+3. Bảng điều khiển nằm ngoài khung 9:16 nên không lọt vào hình phát.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Cấu trúc mã nguồn
 
-### Code Splitting
+| File | Vai trò |
+| --- | --- |
+| `src/game/config.js` | Toàn bộ số liệu cân bằng: chỉ số tàu, bậc quà, luật trận |
+| `src/game/engine.js` | Mô phỏng trận đấu, xử lý sự kiện, tính điểm (không phụ thuộc giao diện) |
+| `src/game/renderer.js` | Vẽ chiến trường lên canvas |
+| `src/game/eventSource.js` | Kết nối cầu nối WebSocket và bộ giả lập người xem |
+| `src/App.js` | Vòng lặp game, HUD, bảng điều khiển |
+| `server/index.js` | Cầu nối TikTok LIVE → WebSocket |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Kiểm thử phần lõi: `CI=true npm test`.
